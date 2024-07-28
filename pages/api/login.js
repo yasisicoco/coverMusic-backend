@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cors from "../../lib/cors";
-import { users } from "./users"; // 사용자 배열을 임포트
+import { users } from "./users";
+import dotenv from "dotenv";
+
+dotenv.config(); // .env 파일에서 환경 변수를 로드
 
 export default async (req, res) => {
   await cors(req, res);
@@ -28,9 +31,11 @@ export default async (req, res) => {
         .json({ message: "Invalid credentials: Password incorrect" });
     }
 
-    const token = jwt.sign({ username: user.username }, "secret-key", {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
     res.json({ token });
   } else {
     res.status(405).json({ message: "Method not allowed" });
